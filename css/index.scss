@@ -1,2 +1,36 @@
 @charset "UTF-8";
+// Manipulating default colors
+$dark: #202520;
+$darker: #2e2e2e;
+$light: #d6d6d6;
+$body-bg: $dark;
+$body-color: $light;
+$theme-colors: (
+    "primary": $darker,
+    "secondary": $light,
+    // "success": #c6ff29,
+    // "info": #c6ff29,
+    // "warning": #c6ff29,
+    "danger": #c6ff29
+);
+
+// Manipulating default shaping
+$enable-rounded: false;
+
+// Setting default fonts
+@font-face {
+    font-family: 'OCR A Std';
+    font-style: normal;
+    font-weight: normal;
+    src: local('OCR A Std'), url('/fonts/OCRAStd.woff') format('woff');
+}
+$font-family-serif: Times;
+$font-family-monospace: 'OCR A Std', monospace !default;
+$font-family-base: $font-family-monospace !default;
+
+
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
+
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins";
