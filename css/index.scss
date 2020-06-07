@@ -3,7 +3,8 @@
 $dark: #202520;
 $darker: #2e2e2e;
 $light: #d6d6d6;
-$body-bg: $dark;
+$transparent: rgba(0, 0, 0, 0);
+$body-bg: $darker;
 $body-color: $light;
 $theme-colors: (
     "primary": $darker,
@@ -28,8 +29,29 @@ $font-family-serif: Times;
 $font-family-monospace: 'OCR A Std', monospace !default;
 $font-family-base: $font-family-monospace !default;
 
+@import "node_modules/bootstrap/scss/bootstrap.scss";
+body {
+    background: url("/vulspalogo.svg") no-repeat center center fixed;
+    background-size: 60vw 60vh;
+    background-color: $dark;
+}
 
-@import "../node_modules/bootstrap/scss/bootstrap.scss";
+main {
+    background: $transparent;
+}
+
+span {
+    margin: 0;
+    padding: 0;
+}
+
+.terminal {
+    display: inline-block;
+    margin: 0;
+    outline: none;
+    caret-color: $light;
+    background: $transparent;
+}
 
 @import "node_modules/bootstrap/scss/functions";
 @import "node_modules/bootstrap/scss/variables";
