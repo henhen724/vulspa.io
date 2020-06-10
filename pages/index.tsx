@@ -43,10 +43,11 @@ class Home extends Component<{}, { username: string, prevCMDs: Command[], curren
   }
 
   submitTerminal = () => {
-    console.log("enter pressed");
+    var tmpCmds = this.state.prevCMDs;
+    tmpCmds.push(new Command(this.state.username, this.state.currentCMD))
     this.setState({
       ...this.state,
-      prevCMDs: [new Command(this.state.username, this.state.currentCMD)].concat(this.state.prevCMDs),
+      prevCMDs: tmpCmds,
       currentCMD: ""
     });
     console.log(this.state.prevCMDs)
@@ -54,6 +55,7 @@ class Home extends Component<{}, { username: string, prevCMDs: Command[], curren
 
   prevCommand = () => {
     console.log("UP pressed");
+
   }
 
   nextCommand = () => {
@@ -88,17 +90,17 @@ class Home extends Component<{}, { username: string, prevCMDs: Command[], curren
     return (<div>
       <Head>
         <title>Vulspa</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicons/favicon.svg" />
       </Head>
       {navbar()}
       <main className="container-fluid mt-4 main h-100">
         {this.state.prevCMDs.map((CMD, index) => {
           console.log("Printing " + CMD.input);
           return (<div>
-            <span>{CMD.username + "@VULSPA>"}</span><input className="container bg-dark border-0 text-light terminal" type="text" id={index.toString()} spellCheck="false" value={CMD.input} />
+            <span>{CMD.username + "@VULSPA>"}</span><input className="container border-0 text-light terminal" type="text" id={index.toString()} spellCheck="false" value={CMD.input} />
           </div>)
         })}
-        <span>{this.state.username + "@VULSPA>"}</span><input className="container bg-dark border-0 text-light terminal" type="text" spellCheck="false" value={this.state.currentCMD} onChange={this.handleTerminalInput} />
+        <span>{this.state.username + "@VULSPA>"}</span><input className="container border-0 text-light terminal" type="text" spellCheck="false" value={this.state.currentCMD} onChange={this.handleTerminalInput} />
       </main>
     </div >)
   }
