@@ -1,8 +1,9 @@
 import Head from 'next/head';
 import navbar from '../components/navbar';
 import { Component } from 'react';
+import 'isomorphic-fetch';
 
-//Defining some keycodes we need
+//Defining some keycodes we need for the user controls
 const KEYCODES = {
   tab: 9,
   enter: 13,
@@ -23,9 +24,34 @@ const KEYCODES = {
 class Command {
   username: string;
   input: string;
+  rslt: string;
   constructor(_username: string, _input: string) {
     this.username = _username;
     this.input = _input;
+    this.rslt = '';
+  }
+  run() {
+    return new Promise((accept, reject) => {
+      fetch('/api/commands', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ command: this.input })
+      }).then(res => {
+        return res.json(); //Whats happening is .json() itself returns a promise so that fetch can return packets with large bodies as a stream.
+      }).catch(err => {
+        console.log("Command error:", err, "\nFor the command:", this.input, "\nUser:", this.username);
+        return new Promise(accept => {
+          accept({ msg: "This is is an internal site error.  See error message in console.\n" })
+        });
+      }).then(body => {
+        this.rslt = body.msg;
+        console.log("CMD: ", this.input, "RSLT: ", this.rslt);
+        accept();
+      })
+    })
   }
 }
 
@@ -44,13 +70,15 @@ class Home extends Component<{}, { username: string, prevCMDs: Command[], curren
 
   submitTerminal = () => {
     var tmpCmds = this.state.prevCMDs;
-    tmpCmds.push(new Command(this.state.username, this.state.currentCMD))
-    this.setState({
-      ...this.state,
-      prevCMDs: tmpCmds,
-      currentCMD: ""
-    });
-    console.log(this.state.prevCMDs)
+    const CMD = new Command(this.state.username, this.state.currentCMD);
+    tmpCmds.push(CMD);
+    CMD.run().then(() => {
+      this.setState({
+        ...this.state,
+        prevCMDs: tmpCmds,
+        currentCMD: ""
+      }); // We want to wait to render this state only after the response is recieved from the API
+    })
   }
 
   prevCommand = () => {
@@ -96,11 +124,14 @@ class Home extends Component<{}, { username: string, prevCMDs: Command[], curren
       <main className="container-fluid mt-4 main h-100">
         {this.state.prevCMDs.map((CMD, index) => {
           console.log("Printing " + CMD.input);
-          return (<div>
-            <span>{CMD.username + "@VULSPA>"}</span><input className="container border-0 text-light terminal" type="text" id={index.toString()} spellCheck="false" value={CMD.input} />
+          return (<div id={"Command-" + index.toString()}>
+            <span>{CMD.username + "@VULSPA>"}</span><input className="container border-0 text-light terminal" type="text" spellCheck="false" value={CMD.input} readOnly={true} />
+            <div id="Rslt">{CMD.rslt}</div>
           </div>)
         })}
-        <span>{this.state.username + "@VULSPA>"}</span><input className="container border-0 text-light terminal" type="text" spellCheck="false" value={this.state.currentCMD} onChange={this.handleTerminalInput} />
+        <div id="Command-input">
+          <span>{this.state.username + "@VULSPA>"}</span><input className="container border-0 text-light terminal" type="text" spellCheck="false" value={this.state.currentCMD} onChange={this.handleTerminalInput} />
+        </div>
       </main>
     </div >)
   }
