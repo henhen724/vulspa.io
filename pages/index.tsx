@@ -32,25 +32,8 @@ class Command {
   }
   run() {
     return new Promise((accept, reject) => {
-      fetch('/api/commands', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json, text/plain, */*',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ command: this.input })
-      }).then(res => {
-        return res.json(); //Whats happening is .json() itself returns a promise so that fetch can return packets with large bodies as a stream.
-      }).catch(err => {
-        console.log("Command error:", err, "\nFor the command:", this.input, "\nUser:", this.username);
-        return new Promise(accept => {
-          accept({ msg: "This is is an internal site error.  See error message in console.\n" })
-        });
-      }).then(body => {
-        this.rslt = body.msg;
-        console.log("CMD: ", this.input, "RSLT: ", this.rslt);
-        accept();
-      })
+      this.rslt = 'GraphQL query is unimplimented. So this doesn\'t work yet';
+      accept();
     })
   }
 }
