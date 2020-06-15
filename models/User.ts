@@ -1,13 +1,35 @@
 import mongoose from 'mongoose';
 
+// Defining the typescript interfaces which user will use.
+interface DiscordUser {
+    id: string
+}
+
+interface SteamUser {
+    id: string
+}
+
+interface User {
+    id: string,
+    hash: string,
+    salt: string,
+    name: string,
+    discord?: DiscordUser,
+    steam?: SteamUser,
+}
+
 const UserSchema = new mongoose.Schema({
     id: {
         type: mongoose.Types.ObjectId,
         required: [true, 'This user needs an object id.']
     },
-    admin: {
-        type: Boolean,
-        required: [true, 'I need to know whether this is an admin or not.']
+    hash: {
+        type: String,
+        required: [true, 'User needs a password hash.']
+    },
+    salt: {
+        type: String,
+        required: [true, 'User needs a salt for password encryption.']
     },
     name: {
         type: String,
@@ -29,4 +51,4 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+export default mongoose.models.User || mongoose.model('User', UserSchema, 'users');
