@@ -5,6 +5,8 @@ $darker: #2e2e2e;
 $arylic-light: rgba(0, 0, 0, 0.25);
 $light: #d6d6d6;
 $transparent: rgba(0, 0, 0, 0);
+$warmind-red: #e24444;
+
 $body-bg: $darker;
 $body-color: $light;
 $theme-colors: (
@@ -37,10 +39,29 @@ body {
     background-color: $dark;
 }
 
-main {
+a {
     background: $transparent;
+    color: $light;
+    transition: color 1s;
 }
-
+a:hover {
+    color: $warmind-red;
+    text-decoration: none;
+}
+a:hover::first-line {
+    content: "";
+    background: red;
+}
+.intro-particles {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    z-index: -10;
+}
 span {
     margin: 0;
     padding: 0;
