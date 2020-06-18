@@ -4,8 +4,20 @@ import AdminInfo, { Permissions } from '../models/AdminInfo';
 import { createUser, validatePassword } from '../lib/users';
 import { setLoginSession, getLoginSession } from '../lib/auth';
 import { removeTokenCookie } from '../lib/auth-cookies';
+import fetch from 'isomorphic-unfetch';
+import { GraphQLScalarType } from 'graphql';
 
 const resolver = {
+    Date: new GraphQLScalarType({
+        name: 'Date',
+        description: 'The standard Date type for javascript',
+        parseValue(value) {
+            return new Date(value);
+        },
+        serialize(value) {
+            return value.getTime();
+        },
+    }),
     Query: {
         async user(id) {
             return await User.find({ id: id }).exec();
@@ -17,12 +29,38 @@ const resolver = {
             return await User.find({}).exec();
         },
         async viewer(parent, args, context, info) {
-            try {
-                const session = await getLoginSession(context.req);
+            const session = await getLoginSession(context.req);
 
-                if (session) {
-                    return await User.find({ id: session.id }).exec();
-                }
+            if (session) {
+                return await User.findOne({ id: session.id }).exec();
+            }
+        },
+        async discordOAuthCode(parent, args, context, info) {
+            const data = {
+                'client_id': process.env.DISCORD_BOT_CLIENT_ID,
+                'client_secret': process.env.DISCORD_BOT_CLIENT_SECRET,
+                'grant_type': 'authorization_code',
+                'code': args.code,
+                'scope': 'identify connections gdm.join',
+                'redirect_uri': process.env.ROOT_URI + '/accounts/discord/landing',
+            };
+            const body = new URLSearchParams(data);
+
+            const bearerToken = await (await fetch('https://discord.com/api/oauth2/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body,
+            })).json();
+            try {
+                const session = await getLoginSession(context.res);
+                var user = await User.findOne({ id: session.id }).exec();
+                user.discord = {
+                    token: bearerToken.access_token,
+                    refresh_token: bearerToken.refresh_token,
+                    expirationDate: new Date(Date.now() + bearerToken.expires_in)
+                };
+                await user.save();
+                return user
             } catch (error) {
                 throw new AuthenticationError(`Authentication token is not valid or not present.  Please log in.`);
             }
@@ -30,6 +68,12 @@ const resolver = {
         async adminList() {
             return await AdminInfo.find({}).exec();
         },
+        async adminListByUser() {
+            const admins = await AdminInfo.find({}).exec();
+            const adminids = admins.map(admin => admin.id);
+            const users = await User.find({ id: { $in: adminids } }).exec();
+            return { users, admins }
+        }
     },
     Mutation: {
         async signUp(parent, args, context, info) {
@@ -49,7 +93,7 @@ const resolver = {
                 console.log(`There are some how ${user.length} users with the name ${name}.  Here they are:\n${user}`);
                 throw new Error(`Internal server error, some how multiple people have the name ${user.name}.`);
             }
-            if (validatePassword(user[0], password)) {
+            if (await validatePassword(user[0], password)) {
                 const session = { id: user[0].id, name: user[0].name }
 
                 await setLoginSession(context.res, session);

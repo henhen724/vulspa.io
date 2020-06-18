@@ -2,6 +2,7 @@
 // Manipulating default colors
 $dark: #202520;
 $darker: #2e2e2e;
+$arylic-light: rgba(0, 0, 0, 0.25);
 $light: #d6d6d6;
 $transparent: rgba(0, 0, 0, 0);
 $body-bg: $darker;
@@ -10,7 +11,7 @@ $theme-colors: (
     "primary": $darker,
     "secondary": $light,
     // "success": #c6ff29,
-    // "info": #c6ff29,
+    "info": $arylic-light,
     // "warning": #c6ff29,
     "danger": #c6ff29
 );
@@ -44,6 +45,11 @@ span {
     margin: 0;
     padding: 0;
     background: $transparent;
+}
+
+.form-group {
+    text-align: center;
+    align-self: center;
 }
 
 .terminal {

@@ -2,8 +2,13 @@ import { gql } from 'apollo-server-micro';
 
 const typeDef = gql`
 
+scalar Date
+
 type DiscordUser {
     id: String
+    token: String
+    refresh_token: String
+    expirationDate: Date
 }
 
 type SteamUser {
@@ -69,22 +74,30 @@ type deleteAdminPayload {
     admin: AdminInfo!
 }
 
+type adminListByUserPayload {
+    admins: [AdminInfo]!
+    users: [User]!
+}
+
 type Query {
     user(id:ID!): User!
     userByName(name:String!): [User]!
     users: [User]!
     viewer: User
+    discordOAuthCode(code: String!): User
     adminList: [AdminInfo]!
+    adminListByUser: adminListByUserPayload!
 }
 
 type Mutation {
-    signUp(input: SignUpInput!): SignUpPayload
-    signIn(input: SignInInput!): SignInPayload
-    deleteUser(id: ID!): DeleteUserPayload
+    signUp(input: SignUpInput!): SignUpPayload!
+    signIn(input: SignInInput!): SignInPayload!
+    signOut: Boolean!
+    deleteMyself: DeleteUserPayload!
     editAdmin(input: editAdminInput!): editAdminPayload!
     deleteAdmin(input: deleteAdminInput!): deleteAdminPayload!
+    deleteUser(id: ID!): DeleteUserPayload!
     runCommand(command: String!): String!
-    signOut: Boolean!
 }
 `
 export default typeDef;

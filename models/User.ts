@@ -2,7 +2,9 @@ import mongoose from 'mongoose';
 
 // Defining the typescript interfaces which user will use.
 interface DiscordUser {
-    id: string
+    id: string,
+    code: string,
+    token: string,
 }
 
 interface SteamUser {
@@ -38,6 +40,18 @@ const UserSchema = new mongoose.Schema({
     discord: {
         id: {
             type: String,
+            required: false
+        },
+        token: {
+            type: String,
+            required: false
+        },
+        refresh_token: {
+            type: String,
+            required: false
+        },
+        expirationDate: {
+            type: Date,
             required: false
         },
         required: false

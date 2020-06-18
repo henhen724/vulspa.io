@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 export enum Permissions {
+    non_admin = 'non_admin',
     normal = 'normal',
     bot = 'bot',
     super = 'super'

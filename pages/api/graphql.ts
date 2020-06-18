@@ -1,18 +1,11 @@
 import { ApolloServer } from 'apollo-server-micro';
-import schema from '../../apollo-server/schema';
-import mongoose from 'mongoose';
+import schema from '../../apollo/schema';
+import dbConnect from '../../lib/dbConnect';
 
-let conectedToMongoDB = false;
 
 const apolloServer = new ApolloServer({
     schema: schema,
     context: async ctx => {
-        if (!conectedToMongoDB) {
-            console.log("Connecting to mongoDB.");
-            ctx.db = await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, });
-            console.log("Connected");
-            conectedToMongoDB = true;
-        }
         return ctx;
     },
 })
@@ -23,4 +16,12 @@ export const config = {
     },
 }
 
-export default apolloServer.createHandler({ path: '/api/graphql' })
+const apolloHandler = apolloServer.createHandler({ path: '/api/graphql' });
+
+const wrapedHandler = async (req, res) => {
+    await dbConnect();
+
+    return await apolloHandler(req, res);
+}
+
+export default wrapedHandler;

@@ -1,6 +1,6 @@
 import navitem from './navitem';
 
-export default function navbar() {
+export default function Navbar() {
     return (
         <div className="container-fluid mt-2 w-100">
             <div className="row">
