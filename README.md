@@ -8,6 +8,6 @@ Feel free to clone this repo, but I would ask you not reuse the artwork, the css
 - [ ] Finish basic command response
 - [x] Find a way to store user state longer term/database
 - [x] Add api for bot (Using Apollo and GraphQL)
-- [ ] Add path autherization
-- [ ] Add discord OAuth2
+- [x] Add path autherization
+- [x] Add discord OAuth2
 - [ ] Add bungie.net OAuth2
