@@ -1,7 +1,7 @@
 import Head from 'next/head';
 
 const vulspa_description = "Vulspa bot is a Destiny 2 Discord bot that responds to your fireteam's call-outs and can help teach you raid encounters while you play them.";
-const vulspa_logo_url = "https://vulspa-io.herokuapp.com/vulspalogo.svg";
+const vulspa_logo_url = "https://vulspa-io.herokuapp.com/images/vulspalogo.png";
 const vulspa_twitter = "@vulspa";
 
 const Header = ({ title }) => {
