@@ -42,7 +42,7 @@ body {
 a {
     background: $transparent;
     color: $light;
-    transition: color 1s;
+    transition: color 0.75s;
 }
 a:hover {
     color: $warmind-red;
