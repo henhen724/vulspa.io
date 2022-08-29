@@ -13,11 +13,7 @@ export async function setLoginSession(res, session) {
     setTokenCookie(res, token)
 }
 
-export async function getLoginSession(req) {
-    const token = getTokenCookie(req)
-
-    if (!token) return
-
+export async function getLoginSessionFromToken(token) {
     const session = await Iron.unseal(token, TOKEN_SECRET, Iron.defaults)
     const expiresAt = session.createdAt + session.maxAge * 1000
 
@@ -27,8 +23,16 @@ export async function getLoginSession(req) {
     return null
 }
 
+export async function getLoginSessionFromReq(req) {
+    const token = getTokenCookie(req);
+
+    if (!token) return;
+
+    return getLoginSessionFromToken(token);
+}
+
 export async function getPermissions(req) {
-    const session = await getLoginSession(req);
+    const session = await getLoginSessionFromReq(req);
     const admin = await AdminInfo.findOne({ id: session.id });
     if (admin) {
         return admin.permission_level;

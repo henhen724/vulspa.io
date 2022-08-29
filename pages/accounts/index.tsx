@@ -42,7 +42,7 @@ const Home = () => {
       <Navbar />
       <div className="row">
         <div className="col container bg-info border mt-4 pb-2 ml-4 mr-2">
-          <Terminal />
+          <Terminal username={viewer.name} />
         </div>
         <div className="col container bg-info border mt-4 pb-2 ml-2 mr-4">
           <Profile viewer={viewer} router={router} />

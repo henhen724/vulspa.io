@@ -9,12 +9,13 @@ const LinkDiscord = ({ token }) => {
         const data = {
             'client_id': process.env.DISCORD_BOT_CLIENT_ID,
             'response_type': 'code',
-            'scope': 'identify connections gdm.join',
+            'scope': 'identify email connections gdm.join',
             'redirect_uri': process.env.ROOT_URI + '/accounts/discord/landing',
+            'state': token
         }
-        var discordOAuthParms = new URLSearchParams(data).toString()
+        var discordOAuthParams = new URLSearchParams(data).toString()
 
-        return 'https://discord.com/api/oauth2/authorize?' + discordOAuthParms;
+        return 'https://discord.com/api/oauth2/authorize?' + discordOAuthParams;
     }
     return (
         <div className="container bg-info text-center border mt-4 pb-2">

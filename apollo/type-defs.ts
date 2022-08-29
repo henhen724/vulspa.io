@@ -84,7 +84,8 @@ type Query {
     userByName(name:String!): [User]!
     users: [User]!
     viewer: User
-    discordOAuthCode(code: String!): User
+    discordOAuthCode(code: String!, state: String!): User
+    bungieOAuthCode(code: String!, state: String!): User
     adminList: [AdminInfo]!
     adminListByUser: adminListByUserPayload!
 }

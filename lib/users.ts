@@ -18,9 +18,11 @@ export const createUser = data => {
 }
 
 export const validatePassword = (user: any, inputPassword: string) => {
+    console.log(user.salt)
     const inputHash = crypto
         .pbkdf2Sync(inputPassword, user.salt, 1000, 64, 'sha512')
         .toString('hex');
+    console.log(inputHash)
     const passwordsMatch = user.hash === inputHash;
 
     return passwordsMatch

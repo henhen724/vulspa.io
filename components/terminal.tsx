@@ -29,17 +29,17 @@ class Command {
     }
     run() {
         return new Promise((accept, reject) => {
-            this.rslt = 'GraphQL query is unimplimented. So this doesn\'t work yet';
-            accept();
+            this.rslt = 'GraphQL query is unimplemented. So this doesn\'t work yet';
+            accept(1);
         })
     }
 }
 
-class Terminal extends Component<{}, { username: string, prevCMDs: Command[], currentCMD: string }> {
-    constructor(props: Object) {
+class Terminal extends Component<{ username: string }, { username: string, prevCMDs: Command[], currentCMD: string }> {
+    constructor(props: { username: string }) {
         super(props);
         this.state = {
-            username: "GUEST",
+            username: props.username,
             prevCMDs: [],
             currentCMD: ""
         };
@@ -57,7 +57,7 @@ class Terminal extends Component<{}, { username: string, prevCMDs: Command[], cu
                 ...this.state,
                 prevCMDs: tmpCmds,
                 currentCMD: ""
-            }); // We want to wait to render this state only after the response is recieved from the API
+            }); // We want to wait to render this state only after the response is received from the API
         })
     }
 

@@ -4,9 +4,9 @@
   "private": true,
   "heroku-postbuild": "heroku-nextjs-build",
   "scripts": {
-    "dev": "next dev -p 80",
-    "build": "next build",
-    "start": "next start -p $PORT"
+    "dev": "npx next dev -p 3000",
+    "build": "npx next build",
+    "start": "npx next start -p $PORT"
   },
   "dependencies": {
     "3": "^2.1.0",
@@ -23,21 +23,22 @@
     "cookie": "^0.4.1",
     "crypto": "^1.0.1",
     "graphql": "^15.1.0",
-    "graphql-tag": "^2.10.3",
+    "graphql-tag": "^2.12.6",
     "isomorphic-unfetch": "^3.0.0",
     "jquery": "3.5.0",
     "mongoose": "^5.9.18",
-    "next": "9.4.4",
+    "next": "^12.2.5",
     "popper.js": "^1.16.0",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-particles-js": "^3.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-tsparticles": "^2.2.4",
     "reactstrap": "^8.4.1",
-    "sass": "^1.26.7"
+    "sass": "^1.26.7",
+    "tsparticles": "^2.2.4"
   },
   "devDependencies": {
     "@types/node": "^14.0.11",
-    "@types/react": "^16.9.36",
-    "typescript": "^3.9.5"
+    "@types/react": "^18.0.17",
+    "typescript": "^4.8.2"
   }
 }

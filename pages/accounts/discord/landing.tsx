@@ -1,12 +1,11 @@
 import gql from 'graphql-tag'
-import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/react-hooks'
 import { getErrorMessage } from '../../../lib/form'
 
 const DiscordResponseQuery = gql`
-query DiscordResponseQuery($code: String!) {
-    discordOAuthCode(code: $code) {
+query DiscordResponseQuery($code: String!, $state: String!) {
+    discordOAuthCode(code: $code, state: $state) {
         name
     }
 }
@@ -14,9 +13,9 @@ query DiscordResponseQuery($code: String!) {
 `
 
 const DiscordLanding = ({ query }) => {
-    const { loading, error, data } = useQuery(DiscordResponseQuery, { variables: { code: query.code } });
+    const { loading, error, data } = useQuery(DiscordResponseQuery, { variables: { code: query.code, state: query.state } });
     if (loading) return (<div className="container bg-info text-center border mt-4 pb-2">
-        Wating for discord to respond.
+        Waiting for discord to respond.
     </div>)
     if (error) {
         return (<div className="container text-center">

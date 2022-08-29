@@ -5,10 +5,14 @@ interface DiscordUser {
     id: string,
     code: string,
     token: string,
+    expatriationDate: Date,
 }
 
-interface SteamUser {
-    id: string
+interface BungieUser {
+    id: string,
+    code: string,
+    token: string,
+    expatriationDate: Date,
 }
 
 interface User {
@@ -16,14 +20,19 @@ interface User {
     hash: string,
     salt: string,
     name: string,
+    email: string,
     discord?: DiscordUser,
-    steam?: SteamUser,
+    bungie?: BungieUser,
 }
 
 const UserSchema = new mongoose.Schema({
     id: {
         type: mongoose.Types.ObjectId,
         required: [true, 'This user needs an object id.']
+    },
+    email: {
+        type: String,
+        required: false
     },
     hash: {
         type: String,
@@ -56,9 +65,21 @@ const UserSchema = new mongoose.Schema({
         },
         required: false
     },
-    steam: {
+    bungie: {
         id: {
             type: String,
+            required: false
+        },
+        token: {
+            type: String,
+            required: false
+        },
+        refresh_token: {
+            type: String,
+            required: false
+        },
+        expirationDate: {
+            type: Date,
             required: false
         },
         required: false

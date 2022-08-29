@@ -48,8 +48,8 @@ export const initializeApollo = (initialState = null) => {
     return _apolloClient;
 }
 
-export const useApollo = (initalState) => {
-    const store = useMemo(() => initializeApollo(initalState), [initalState]);
+export const useApollo = (initialState) => {
+    const store = useMemo(() => initializeApollo(initialState), [initialState]);
 
     return store;
 }

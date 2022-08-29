@@ -1,11 +1,9 @@
 import { serialize, parse } from 'cookie'; // Serialize formats token into a cookie parse turns the cookie into the token
 
-const TOKEN_NAME = 'vulspa_token'; //The property name in the header for our cookie
-
 export const MAX_AGE = 60 * 60 * 8;
 
 export function setTokenCookie(res, token) {
-    const cookie = serialize(TOKEN_NAME, token, {
+    const cookie = serialize(process.env.TOKEN_NAME, token, {
         maxAge: MAX_AGE,
         expires: new Date(Date.now() + MAX_AGE * 100), // I don't understand why this is set to 100 times the max age but its what the example said to do
         httpOnly: true,
@@ -18,7 +16,7 @@ export function setTokenCookie(res, token) {
 }
 
 export function removeTokenCookie(res) {
-    const cookie = serialize(TOKEN_NAME, '', {
+    const cookie = serialize(process.env.TOKEN_NAME, '', {
         maxAge: -1,
         path: '/',
     })
@@ -35,5 +33,5 @@ export function parseCookies(req) {
 
 export function getTokenCookie(req) {
     const cookies = parseCookies(req);
-    return cookies[TOKEN_NAME];
+    return cookies[process.env.TOKEN_NAME];
 }
