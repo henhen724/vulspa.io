@@ -1,9 +1,4 @@
 export default function Field({ name, label, type, autoComplete, required }) {
-    const _onkeydown = (e) => {
-        if (e.key === 'Enter') {
-
-        }
-    }
     return (
         <div>
             <label id={[name, 'label'].join('-')} htmlFor={[name, 'input'].join('-')}>

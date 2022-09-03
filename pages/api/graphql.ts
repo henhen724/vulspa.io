@@ -18,10 +18,10 @@ export const config = {
 
 const apolloHandler = apolloServer.createHandler({ path: '/api/graphql' });
 
-const wrapedHandler = async (req, res) => {
+const wrappedHandler = async (req, res) => {
     await dbConnect();
 
     return await apolloHandler(req, res);
 }
 
-export default wrapedHandler;
+export default wrappedHandler;

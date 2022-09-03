@@ -1,4 +1,4 @@
-import navitem from './navitem';
+import navitem from './Navitem';
 
 export default function Navbar() {
     return (

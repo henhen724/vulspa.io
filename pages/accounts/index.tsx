@@ -1,7 +1,7 @@
-import Navbar from '../../components/navbar';
-import Terminal from '../../components/terminal';
-import Profile from '../../components/profile';
-import Header from '../../components/header';
+import Navbar from '../../components/Navbar';
+import Terminal from '../../components/Terminal';
+import Profile from '../../components/Profile';
+import Header from '../../components/Header';
 import { useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useRouter } from 'next/router';

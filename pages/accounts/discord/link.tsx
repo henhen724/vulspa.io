@@ -1,32 +1,23 @@
-import { useRouter } from 'next/router';
+import DiscordOAuthButton from '../../../components/DiscordOAuthButton';
 import { getTokenCookie } from '../../../lib/auth-cookies';
 
-const LinkDiscord = ({ token }) => {
-    const router = useRouter()
-    function makeDiscordUrl() {
-        if (!token)
-            token = 'NO_TOKEN'
-        const data = {
-            'client_id': process.env.DISCORD_BOT_CLIENT_ID,
-            'response_type': 'code',
-            'scope': 'identify email connections gdm.join',
-            'redirect_uri': process.env.ROOT_URI + '/accounts/discord/landing',
-            'state': token
-        }
-        var discordOAuthParams = new URLSearchParams(data).toString()
+interface LinkDiscordProps {
+    token: string,
+    DISCORD_BOT_CLIENT_ID: string,
+    ROOT_URI: string
+}
 
-        return 'https://discord.com/api/oauth2/authorize?' + discordOAuthParams;
-    }
+const LinkDiscord = (props: LinkDiscordProps) => {
     return (
         <div className="container bg-info text-center border mt-4 pb-2">
             <h1>CONNECT VULSPA TO YOUR COMS CHANNEL</h1>
-            <a className="btn btn-light" href={makeDiscordUrl()}>Connect Discord</a>
+            <DiscordOAuthButton token={props.token} DISCORD_BOT_CLIENT_ID={props.DISCORD_BOT_CLIENT_ID} ROOT_URI={props.ROOT_URI} />
         </div>
     )
 }
 
-LinkDiscord.getInitialProps = async (ctx) => {
-    return { token: getTokenCookie(ctx.req) }
+export async function getServerSideProps(ctx) {
+    return { token: getTokenCookie(ctx.req), DISCORD_BOT_CLIENT_ID: process.env.DISCORD_BOT_CLIENT_ID, ROOT_URI: process.env.ROOT_URI }
 }
 
 export default LinkDiscord;

@@ -28,19 +28,18 @@ interface User {
 const UserSchema = new mongoose.Schema({
     id: {
         type: mongoose.Types.ObjectId,
-        required: [true, 'This user needs an object id.']
+        unique: true,
+        required: true
+    },
+    discordId: {
+        type: String,
+        index: true,
+        unique: true,
+        required: true
     },
     email: {
         type: String,
         required: false
-    },
-    hash: {
-        type: String,
-        required: [true, 'User needs a password hash.']
-    },
-    salt: {
-        type: String,
-        required: [true, 'User needs a salt for password encryption.']
     },
     name: {
         type: String,
