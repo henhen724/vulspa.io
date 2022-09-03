@@ -11,17 +11,15 @@ type DiscordUser {
     expirationDate: Date
 }
 
-type SteamUser {
+type BungieUser {
     id: String
 }
 
 type User {
-    id: ID!
-    hash: String!
-    salt: String!
+    discordId: ID!
     name: String!
     discord: DiscordUser
-    steam: SteamUser
+    bungie: BungieUser
 }
 
 enum Permissions {
@@ -35,22 +33,8 @@ type AdminInfo {
     permission_level: Permissions!
 }
 
-input SignUpInput {
-    name: String!
-    password: String!
-}
-
 type SignUpPayload {
     user: User!
-}
-
-input SignInInput {
-    name: String!
-    password: String!
-}
-
-type SignInPayload {
-    user: User
 }
 
 type DeleteUserPayload {
@@ -91,8 +75,6 @@ type Query {
 }
 
 type Mutation {
-    signUp(input: SignUpInput!): SignUpPayload!
-    signIn(input: SignInInput!): SignInPayload!
     signOut: Boolean!
     deleteMyself: DeleteUserPayload!
     editAdmin(input: editAdminInput!): editAdminPayload!

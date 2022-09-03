@@ -1,7 +1,7 @@
 import { AuthenticationError, UserInputError } from 'apollo-server-micro';
 import User from '../models/User';
 import AdminInfo, { Permissions } from '../models/AdminInfo';
-import { createUser, validatePassword } from '../lib/users';
+import { createUser } from '../lib/users';
 import { setLoginSession, getLoginSessionFromReq, getLoginSessionFromToken } from '../lib/auth';
 import { removeTokenCookie } from '../lib/auth-cookies';
 import fetch from 'isomorphic-unfetch';
@@ -36,6 +36,7 @@ const resolver = {
             }
         },
         async discordOAuthCode(parent, args, context, info) {
+            // Get token and id from discord
             const data = {
                 'client_id': process.env.DISCORD_BOT_CLIENT_ID,
                 'client_secret': process.env.DISCORD_BOT_CLIENT_SECRET,
@@ -45,44 +46,53 @@ const resolver = {
                 'redirect_uri': process.env.ROOT_URI + '/accounts/discord/landing',
             };
             const body = new URLSearchParams(data);
-
             const bearerToken = await (await fetch('https://discord.com/api/oauth2/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body,
             })).json();
-
             if (bearerToken.error) {
                 throw new AuthenticationError(`Discord authentication failed: ${bearerToken.error} - ${bearerToken.error_description}`)
             }
-            console.log(bearerToken)
-            const userDiscordId = await (await fetch('https://discord.com/api/users/@me', {
+            const discordViewerRes = await (await fetch('https://discord.com/api/users/@me', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${bearerToken.access_token}` }
             })).json();
-            console.log(userDiscordId)
-            if (userDiscordId.error) {
-                throw new AuthenticationError(`Discord authentication failed: ${userDiscordId.error} - ${userDiscordId.error_description}`)
+            if (discordViewerRes.error) {
+                throw new AuthenticationError(`Discord authentication failed: ${discordViewerRes.error} - ${discordViewerRes.error_description}`)
             }
-            const session = await getLoginSessionFromToken(args.state);
-            if (!session) {
-                throw new AuthenticationError(`Authentication token is not valid or not present.  Please log in.`);
+
+            //Find user or create user
+            if (args.state.split(0, 5) === 'TOKEN') {
+                const session = await getLoginSessionFromToken(args.state);
+                if (!session) {
+                    throw new AuthenticationError(`Authentication token is not valid.`);
+                }
+                var user = await User.findOne({ id: session.id }).exec();
+                if (user.discordId !== discordViewerRes.id) {
+                    throw new UserInputError(`You are already signed into a different discord account: ${user.name}.  Please sign out first.`)
+                }
+            } else {
+                var user = await User.findOne({ discordId: discordViewerRes.id }).exec();
+                if (!user) {
+                    const userObj = createUser({ name: discordViewerRes.username, discordId: discordViewerRes.id })
+                    console.log(userObj)
+                    user = User.create(userObj)
+                }
+                const session = { id: user.id, name: user.name };
+                await setLoginSession(context.res, session);
             }
-            var user = await User.findOne({ id: session.id }).exec();
             user.discord = {
-                id: userDiscordId.id,
+                id: discordViewerRes.id,
                 token: bearerToken.access_token,
                 refresh_token: bearerToken.refresh_token,
                 expirationDate: new Date(Date.now() + bearerToken.expires_in)
             };
-            if (!user.email) {
-                user.email = userDiscordId.email;
-            }
+            user.email = discordViewerRes.email;
             await user.save();
             return user
         },
         async bungieOAuthCode(parent, args, context, info) {
-            console.log(process.env.BUNGIE_CLIENT_ID)
             const data = {
                 'client_id': process.env.BUNGIE_CLIENT_ID,
                 'client_secret': process.env.BUNGIE_CLIENT_SECRET,
@@ -125,33 +135,6 @@ const resolver = {
         }
     },
     Mutation: {
-        async signUp(parent, args, context, info) {
-            const user = createUser(args.input);
-            const nameConflict = await User.find({ name: user.name });
-            if (nameConflict.length !== 0)
-                throw new UserInputError(`An account already exists for ${user.name}.`, { type: 'USER_EXISTS' });
-            await User.create(user);
-            return { user };
-        },
-        async signIn(parent, args, context, info) {
-            const { name, password } = args.input;
-            const user = await User.find({ name }).exec(); // Find returns an array here I check that there is exactly one match
-            if (user.length === 0)
-                throw new UserInputError(`There is no users with the name ${name}`, { type: 'USER_DOES_NOT_EXIST' });
-            if (user.length > 1) {
-                console.log(`There are some how ${user.length} users with the name ${name}.  Here they are:\n${user}`);
-                throw new Error(`Internal server error, some how multiple people have the name ${user.name}.`);
-            }
-            if (await validatePassword(user[0], password)) {
-                const session = { id: user[0].id, name: user[0].name }
-
-                await setLoginSession(context.res, session);
-
-                return { user: user[0] };
-            }
-            else
-                throw new AuthenticationError('Sorry, that password isn\'t correct.');
-        },
         async signOut(parent, args, context, info) {
             removeTokenCookie(context.res);
             return true
